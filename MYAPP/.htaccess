@@ -1,0 +1,5 @@
+# Habilita el módulo mod_rewrite para reescribir o redireccionar
+RewriteEngine On
+
+# Redirecciona al archivo index.php cuando encuentre un recurso no válido
+RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]

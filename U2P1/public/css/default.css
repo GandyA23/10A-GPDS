@@ -1,0 +1,63 @@
+.center{
+    text-align: center;
+}
+
+.icon-animated-div {
+    width: 100%;
+    position: relative;
+    animation: IconAnimation 5s infinite;
+}
+
+.pokeball-animated {
+    width: 250px;
+    height: auto;
+    position: relative;
+    animation: PokeBallAnimation 5s infinite;
+}
+
+@keyframes IconAnimation {
+    0% {
+        color: #00B2D7;
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(50px);
+    }
+
+    50% {
+        color: #363C80;
+        transform: translateX(0);
+    }
+
+    75% {
+        transform: translateX(-50px);
+    }
+
+    100%{
+        color: #00B2D7;
+        transform: translateX(0);
+    }
+}
+
+@keyframes PokeBallAnimation {
+    0% {
+        transform: translateX(10rem);
+    }
+
+    25% {
+        transform: translateY(10rem);
+    }
+
+    50% {
+        transform: translateX(-20rem);
+    }
+
+    75% {
+        transform: translateY(-10rem);
+    }
+
+    100% {
+        transform: translateX(10rem);
+    }
+}

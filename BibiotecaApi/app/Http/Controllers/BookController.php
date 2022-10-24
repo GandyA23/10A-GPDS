@@ -208,14 +208,20 @@ class BookController extends Controller
     public function destroy(Book $book)
     {
         try{
+            DB::beginTransaction();
+
             $this->setResponse(
                 $book->delete(),
                 self::GENERIC_MESSAGES['success'],
                 []
             );
+
+            DB::commit();
         }
         catch (Throwable $t)
         {
+            DB::rollBack();
+
             report($t);
             $this->setResponse(
                 false,

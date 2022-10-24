@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Book extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'isbn',
@@ -32,5 +34,12 @@ class Book extends Model
      */
     public function category() {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * The editorial that belongs to the book
+     */
+    public function editorial() {
+        return $this->belongsTo(Editorial::class);
     }
 }

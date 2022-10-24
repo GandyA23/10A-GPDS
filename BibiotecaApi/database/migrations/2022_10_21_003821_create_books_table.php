@@ -5,6 +5,7 @@ use App\Models\Editorial;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 class CreateBooksTable extends Migration
 {
@@ -18,9 +19,9 @@ class CreateBooksTable extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->id();
             $table->string('isbn', 15)->unique();
-            $table->string('title', 255);
+            $table->string('title');
             $table->text('description')->nullable();
-            $table->date('published_date')->nullable();
+            $table->date('published_date')->default(Carbon::now());
             $table->foreignIdFor(Category::class)
                 ->constrained()
                 ->onUpdate('cascade')
@@ -29,6 +30,7 @@ class CreateBooksTable extends Migration
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->softDeletes();
         });
     }
 

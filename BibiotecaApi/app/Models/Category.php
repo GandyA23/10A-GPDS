@@ -14,4 +14,11 @@ class Category extends Model
     ];
 
     public $timestamps = false;
+
+    /**
+     * The books that have the category
+     */
+    public function books() {
+        return $this->hasMany(Book::class);
+    }
 }

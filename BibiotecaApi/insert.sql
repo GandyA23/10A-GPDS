@@ -24,3 +24,38 @@ INSERT INTO author_book(author_id,book_id) VALUES(2,1);
 INSERT INTO author_book(author_id,book_id) VALUES(3,2);
 INSERT INTO author_book(author_id,book_id) VALUES(4,3);
 INSERT INTO author_book(author_id,book_id) VALUES(5,3);
+
+/*
+JSON
+
+{
+  "isbn": "0136152921",
+  "title": "Metodología de la programación",
+  "description": "Programming book",
+  "published_date": "2001-04-12",
+  "category_id": 1,
+  "editorial_id": 2,
+  "authors": [1, 2]
+}
+
+{
+  "isbn": "0136152503",
+  "title": "How to program C++",
+  "description": "Programming book",
+  "published_date": "2005-12-21",
+  "category_id": 1,
+  "editorial_id": 2,
+  "authors": [3]
+}
+
+{
+  "isbn": "0136136791",
+  "title": "Fundamentos de programación",
+  "description": "Programming book",
+  "published_date": "2008-04-12",
+  "category_id": 1,
+  "editorial_id": 3,
+  "authors": [4, 5]
+}
+
+*/

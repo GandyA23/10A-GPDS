@@ -25,21 +25,32 @@ class Book extends Model
     /**
      * The authors that belong to the book.
      */
-    public function authors() {
+    public function authors()
+    {
         return $this->belongsToMany(Author::class);
     }
 
     /**
      * The category that belongs to the book
      */
-    public function category() {
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
     /**
      * The editorial that belongs to the book
      */
-    public function editorial() {
+    public function editorial()
+    {
         return $this->belongsTo(Editorial::class);
+    }
+
+    /**
+     * The book has a book's download counter
+     */
+    public function bookDownload()
+    {
+        return $this->hasOne(BookDownload::class);
     }
 }

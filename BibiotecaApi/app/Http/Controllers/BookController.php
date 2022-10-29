@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Throwable;
 
 class BookController extends Controller
@@ -16,6 +15,10 @@ class BookController extends Controller
         'category_id' => ['required', 'exists:categories,id'],
         'editorial_id' => ['required', 'exists:editorials,id'],
         'authors' => ['sometimes', 'array', 'exists:authors,id'],
+    ];
+
+    private $download = [
+        'total_downloads' => 0
     ];
 
     /**
@@ -32,10 +35,10 @@ class BookController extends Controller
             $this->setResponse(
                 true,
                 self::GENERIC_MESSAGES['success'],
-                Book::with('authors', 'category', 'editorial')->orderBy('published_date', 'DESC')->get()
+                Book::with('authors', 'category', 'editorial', 'bookDownload')->orderBy('published_date', 'DESC')->get()
             );
         }
-        catch (Throwable $t)
+        catch(Throwable $t)
         {
             report($t);
             $this->setResponse(
@@ -80,6 +83,7 @@ class BookController extends Controller
 
             $book = Book::create($request->all());
             $book->authors()->attach($request->authors);
+            $book->bookDownload()->create($this->download);
 
             $this->setResponse(
                 $book->save(),
@@ -89,7 +93,7 @@ class BookController extends Controller
 
             DB::commit();
         }
-        catch (Throwable $t)
+        catch(Throwable $t)
         {
             DB::rollBack();
 
@@ -113,11 +117,13 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        try{
+        try
+        {
             // Get relationship data
             $book->category = $book->category()->get();
             $book->editorial = $book->editorial()->get();
             $book->authors = $book->authors()->get();
+            $book->bookDownload = $book->bookDownload()->get();
 
             $this->setResponse(
                 true,
@@ -125,7 +131,7 @@ class BookController extends Controller
                 $book
             );
         }
-        catch (Throwable $t)
+        catch(Throwable $t)
         {
             report($t);
             $this->setResponse(
@@ -207,7 +213,8 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        try{
+        try
+        {
             DB::beginTransaction();
 
             $this->setResponse(
@@ -218,7 +225,7 @@ class BookController extends Controller
 
             DB::commit();
         }
-        catch (Throwable $t)
+        catch(Throwable $t)
         {
             DB::rollBack();
 

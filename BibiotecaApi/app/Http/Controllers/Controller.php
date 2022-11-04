@@ -46,25 +46,33 @@ class Controller extends BaseController
         $this->httpStatus = $httpStatus;
     }
 
-    protected function setResponse($status, $message, $data, $httpStatus = 0)
+    protected function setJsonResponse($status, $message, $data, $httpStatus = 0)
     {
         $this->response = [
             'status' => $status,
             'message' => $message
         ];
-
         $this->response[$status ? 'data' : 'error'] = $data;
-
-        if (!$httpStatus)
-        {
-            $this->httpStatus = $status ? 200 : 500;
-        }
+        $this->httpStatus = (!$httpStatus ? ($status ? 200 : 500) : $httpStatus);
     }
 
     // Getters
-    protected function getResponse()
+    protected function getJsonResponse()
     {
         return $this->response;
+    }
+
+    protected function getHttpStatus()
+    {
+        return $this->httpStatus;
+    }
+
+    protected function getResponse()
+    {
+        return [
+            $this->getJsonResponse(),
+            $this->getHttpStatus()
+        ];
     }
 
     // Other functions

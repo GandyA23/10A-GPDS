@@ -2,23 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Book;
+use App\Models\Author;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class BookController extends Controller
+class AuthorController extends Controller
 {
     private $rules = [
-        'title' => ['required', 'max:255'],
-        'isbn' => ['required', 'max:15', 'unique:books,isbn'],
-        'category_id' => ['required', 'exists:categories,id'],
-        'editorial_id' => ['required', 'exists:editorials,id'],
-        'authors' => ['sometimes', 'array', 'exists:authors,id'],
-    ];
-
-    private $download = [
-        'total_downloads' => 0
+        'name' => ['required', 'max:45', 'min:2'],
+        'first_surname' => ['required', 'max:45', 'min:2'],
+        'second_surname' => ['nullable', 'max:45', 'min:2'],
     ];
 
     /**
@@ -35,7 +29,7 @@ class BookController extends Controller
             $this->setJsonResponse(
                 true,
                 self::GENERIC_MESSAGES['success'],
-                Book::with('authors', 'category', 'editorial', 'bookDownload')->orderBy('published_date', 'DESC')->get()
+                Author::all()
             );
         }
         catch(Throwable $t)
@@ -82,14 +76,12 @@ class BookController extends Controller
                     ->json(...$this->getResponse());
             }
 
-            $book = Book::create($request->all());
-            $book->authors()->attach($request->authors);
-            $book->bookDownload()->create($this->download);
+            $author = Author::create($request->all());
 
             $this->setJsonResponse(
-                $book->save(),
+                $author->save(),
                 self::GENERIC_MESSAGES['success'],
-                $book,
+                $author,
                 201
             );
 
@@ -114,23 +106,17 @@ class BookController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Book  $book
+     * @param  \App\Models\Author  $author
      * @return \Illuminate\Http\Response
      */
-    public function show(Book $book)
+    public function show(Author $author)
     {
         try
         {
-            // Get relationship data
-            $book->category = $book->category()->get();
-            $book->editorial = $book->editorial()->get();
-            $book->authors = $book->authors()->get();
-            $book->bookDownload = $book->bookDownload()->get();
-
             $this->setJsonResponse(
                 true,
                 self::GENERIC_MESSAGES['success'],
-                $book
+                $author
             );
         }
         catch(Throwable $t)
@@ -151,17 +137,14 @@ class BookController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Book  $book
+     * @param  \App\Models\Author  $author
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Book $book)
+    public function update(Request $request, Author $author)
     {
         try
         {
             DB::beginTransaction();
-
-            // Exclude this id to isbn validation
-            $this->rules['isbn'][2] .= "," . $book->id;
 
             $errorMessages = $this->isValid(
                 $request->all(),
@@ -181,13 +164,12 @@ class BookController extends Controller
                     ->json(...$this->getResponse());
             }
 
-            $book->update($request->all());
-            $book->authors()->sync($request->authors);
+            $author->update($request->all());
 
             $this->setJsonResponse(
-                $book->save(),
+                $author->save(),
                 self::GENERIC_MESSAGES['success'],
-                $book,
+                $author,
                 201
             );
 
@@ -212,17 +194,17 @@ class BookController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Book  $book
+     * @param  \App\Models\Author  $author
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Book $book)
+    public function destroy(Author $author)
     {
         try
         {
             DB::beginTransaction();
 
             $this->setJsonResponse(
-                $book->delete(),
+                $author->delete(),
                 self::GENERIC_MESSAGES['success'],
                 []
             );

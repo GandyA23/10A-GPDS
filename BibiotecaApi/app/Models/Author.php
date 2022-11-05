@@ -9,6 +9,12 @@ class Author extends Model
 {
     use HasFactory;
 
+    public static $rules = [
+        'name' => ['required', 'max:45', 'min:2'],
+        'first_surname' => ['required', 'max:45', 'min:2'],
+        'second_surname' => ['nullable', 'max:45', 'min:2'],
+    ];
+
     protected $fillable = [
         'name',
         'first_surname',

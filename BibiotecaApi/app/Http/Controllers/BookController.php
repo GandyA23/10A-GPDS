@@ -9,14 +9,6 @@ use Throwable;
 
 class BookController extends Controller
 {
-    private $rules = [
-        'title' => ['required', 'max:255'],
-        'isbn' => ['required', 'max:15', 'unique:books,isbn'],
-        'category_id' => ['required', 'exists:categories,id'],
-        'editorial_id' => ['required', 'exists:editorials,id'],
-        'authors' => ['sometimes', 'array', 'exists:authors,id'],
-    ];
-
     private $download = [
         'total_downloads' => 0
     ];
@@ -66,7 +58,7 @@ class BookController extends Controller
 
             $errorMessages = $this->isValid(
                 $request->all(),
-                $this->rules
+                Book::$rules
             );
 
             if ($errorMessages)
@@ -161,11 +153,11 @@ class BookController extends Controller
             DB::beginTransaction();
 
             // Exclude this id to isbn validation
-            $this->rules['isbn'][2] .= "," . $book->id;
+            Book::$rules['isbn'][2] .= "," . $book->id;
 
             $errorMessages = $this->isValid(
                 $request->all(),
-                $this->rules
+                Book::$rules
             );
 
             if ($errorMessages)

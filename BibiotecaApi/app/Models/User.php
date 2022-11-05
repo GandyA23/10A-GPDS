@@ -12,6 +12,21 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public static $rules = [
+        'register' =>
+        [
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:users'],
+            'password' => ['required', 'confirmed'],
+        ],
+        'login' =>
+        [
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+            'device_name' => ['required'],
+        ]
+    ];
+
     /**
      * The attributes that are mass assignable.
      *

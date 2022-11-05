@@ -9,12 +9,6 @@ use Throwable;
 
 class AuthorController extends Controller
 {
-    private $rules = [
-        'name' => ['required', 'max:45', 'min:2'],
-        'first_surname' => ['required', 'max:45', 'min:2'],
-        'second_surname' => ['nullable', 'max:45', 'min:2'],
-    ];
-
     /**
      * Display a listing of the resource.
      *
@@ -60,7 +54,7 @@ class AuthorController extends Controller
 
             $errorMessages = $this->isValid(
                 $request->all(),
-                $this->rules
+                Author::$rules
             );
 
             if ($errorMessages)
@@ -148,7 +142,7 @@ class AuthorController extends Controller
 
             $errorMessages = $this->isValid(
                 $request->all(),
-                $this->rules
+                Author::$rules
             );
 
             if ($errorMessages)

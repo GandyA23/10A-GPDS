@@ -11,6 +11,14 @@ class Book extends Model
     use HasFactory;
     use SoftDeletes;
 
+    public static $rules = [
+        'title' => ['required', 'max:255'],
+        'isbn' => ['required', 'max:15', 'unique:books,isbn'],
+        'category_id' => ['required', 'exists:categories,id'],
+        'editorial_id' => ['required', 'exists:editorials,id'],
+        'authors' => ['sometimes', 'array', 'exists:authors,id'],
+    ];
+
     protected $fillable = [
         'isbn',
         'title',

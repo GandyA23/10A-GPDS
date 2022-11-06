@@ -24,6 +24,11 @@ class User extends Authenticatable
             'email' => ['required', 'email'],
             'password' => ['required'],
             'device_name' => ['required'],
+        ],
+        'change-password' =>
+        [
+            'old_password' => ['required'],
+            'password' => ['required', 'confirmed']
         ]
     ];
 

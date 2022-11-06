@@ -90,15 +90,20 @@ class AuthController extends Controller
                     false,
                     self::GENERIC_MESSAGES['error'],
                     'The provided credentials are incorrect.',
-                    400
+                    200
                 );
             }
             else
             {
+                $token = explode('|', $request->user()->createToken($request->device_name)->plainTextToken);
+
                 $this->setJsonResponse(
                     true,
                     self::GENERIC_MESSAGES['success'],
-                    ['token' => $request->user()->createToken($request->device_name)->plainTextToken]
+                    [
+                        'token_id' => $token[0],
+                        'token' => $token[1]
+                    ]
                 );
             }
 
@@ -121,8 +126,8 @@ class AuthController extends Controller
     {
         try
         {
-            $isDeleted = $request->user()->tokens()->delete();
-            
+            $isDeleted = $request->user()->currentAccessToken()->delete();
+
             $this->setJsonResponse(
                 $isDeleted,
                 self::GENERIC_MESSAGES[$isDeleted ? 'success' : 'error'],
@@ -137,6 +142,97 @@ class AuthController extends Controller
                 self::GENERIC_MESSAGES['error'],
                 [ self::GENERIC_MESSAGES['try_later'] ]
             );
+        }
+
+        return response()
+            ->json(...$this->getResponse());
+    }
+
+    public function userProfile(Request $request)
+    {
+        try
+        {
+            $this->setJsonResponse(
+                true,
+                self::GENERIC_MESSAGES['success'],
+                $request->user()
+            );
+        }
+        catch(Throwable $t)
+        {
+            report($t);
+            $this->setJsonResponse(
+                false,
+                self::GENERIC_MESSAGES['error'],
+                [ self::GENERIC_MESSAGES['try_later'] ]
+            );
+        }
+
+        return response()
+            ->json(...$this->getResponse());
+    }
+
+    public function changePassword(Request $request)
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $errorMessages = $this->isValid(
+                $request->all(),
+                User::$rules['change-password']
+            );
+
+            if ($errorMessages)
+            {
+                $this->setJsonResponse(
+                    false,
+                    self::GENERIC_MESSAGES['error'],
+                    $errorMessages,
+                    400
+                );
+
+                return response()
+                    ->json(...$this->getResponse());
+            }
+
+            $user = $request->user();
+
+            if (Hash::check($request->old_password, $user->password))
+            {
+                $user->password = Hash::make($request->password);
+                $user->save();
+
+                // Drop all tokens to login again
+
+                $this->setJsonResponse(
+                    $user->tokens()->delete(),
+                    self::GENERIC_MESSAGES['success'],
+                    'Change password successful, please login again!'
+                );
+            }
+            else
+            {
+                $this->setJsonResponse(
+                    false,
+                    self::GENERIC_MESSAGES['error'],
+                    'Wrong password!',
+                    200
+                );
+            }
+
+            DB::commit();
+        }
+        catch(Throwable $t)
+        {
+            report($t);
+            $this->setJsonResponse(
+                false,
+                self::GENERIC_MESSAGES['error'],
+                [ self::GENERIC_MESSAGES['try_later'] ]
+            );
+
+            DB::rollBack();
         }
 
         return response()

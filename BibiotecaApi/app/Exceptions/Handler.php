@@ -2,8 +2,11 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -40,8 +43,38 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'status' => false,
                     'message' => 'Not found',
-                    'error' => 'No query results!'
+                    'error' => $e->getMessage()
                 ], 404);
+            }
+        });
+
+        $this->renderable(function (RouteNotFoundException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Not found',
+                    'error' => $e->getMessage()
+                ], 404);
+            }
+        });
+
+        $this->renderable(function (AuthenticationException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthenticated',
+                    'error' => $e->getMessage()
+                ], 401);
+            }
+        });
+
+        $this->renderable(function (MethodNotAllowedHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Method not allowed!',
+                    'error' => $e->getMessage()
+                ], 405);
             }
         });
     }

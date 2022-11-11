@@ -217,7 +217,7 @@ class AuthController extends Controller
                     false,
                     self::GENERIC_MESSAGES['error'],
                     'Wrong password!',
-                    200
+                    401
                 );
             }
 

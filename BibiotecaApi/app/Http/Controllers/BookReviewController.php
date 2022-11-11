@@ -9,7 +9,18 @@ use Throwable;
 
 class BookReviewController extends Controller
 {
-     /**
+    /**
+     * Instantiate a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        // Aother way to set a middleware in a controller
+        $this->middleware('auth:sanctum')->except('index', 'show');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -177,7 +188,7 @@ class BookReviewController extends Controller
                     ->json(...$this->getResponse());
             }
 
-            $bookReview->update($request->all());
+            $bookReview->comment = $request->comment;
             $bookReview->edited = true;
 
             $this->setJsonResponse(

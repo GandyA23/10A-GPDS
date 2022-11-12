@@ -126,6 +126,8 @@ class AuthController extends Controller
     {
         try
         {
+            DB::beginTransaction();
+
             $isDeleted = $request->user()->currentAccessToken()->delete();
 
             $this->setJsonResponse(
@@ -133,9 +135,12 @@ class AuthController extends Controller
                 self::GENERIC_MESSAGES[$isDeleted ? 'success' : 'error'],
                 []
             );
+
+            DB::commit();
         }
         catch(Throwable $t)
         {
+            DB::rollBack();
             report($t);
             $this->setJsonResponse(
                 false,
